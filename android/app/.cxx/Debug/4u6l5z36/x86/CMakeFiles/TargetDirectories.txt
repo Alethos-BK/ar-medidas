@@ -1,0 +1,2 @@
+C:/dsn/facul/setimo_periodo/ar_medidas/android/app/.cxx/Debug/4u6l5z36/x86/CMakeFiles/edit_cache.dir
+C:/dsn/facul/setimo_periodo/ar_medidas/android/app/.cxx/Debug/4u6l5z36/x86/CMakeFiles/rebuild_cache.dir
