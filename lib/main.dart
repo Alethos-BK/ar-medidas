@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+//AR Flutter Plugin
+import 'package:ar_flutter_plugin_2/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_2/models/ar_anchor.dart';
+import 'package:ar_flutter_plugin_2/ar_flutter_plugin.dart';
+import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
+import 'package:ar_flutter_plugin_2/datatypes/node_types.dart';
+import 'package:ar_flutter_plugin_2/datatypes/hittest_result_types.dart';
+import 'package:ar_flutter_plugin_2/models/ar_node.dart';
+import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
+
+//Other custom imports
+import 'package:vector_math/vector_math_64.dart' as vector_math;
+
 void main() {
   runApp(const MyApp());
 }
@@ -30,93 +46,151 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ObjectsOnPlanes(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class ObjectsOnPlanes extends StatefulWidget {
+  const ObjectsOnPlanes({super.key, this.width, this.height});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  final double? width;
+  final double? height;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ObjectsOnPlanes> createState() => _ObjectsOnPlanesState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
+  ARSessionManager? arSessionManager;
+  ARObjectManager? arObjectManager;
+  ARAnchorManager? arAnchorManager;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  List<ARNode> nodes = [];
+  List<ARAnchor> anchors = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+    arSessionManager!.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      appBar: AppBar(title: const Text('Anchors & Objects on Planes')),
+      body: Stack(
+        children: [
+          ARView(
+            onARViewCreated: onARViewCreated,
+            planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
+          ),
+          Align(
+            alignment: FractionalOffset.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: onRemoveEverything,
+                  child: Text("Remove Everything"),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
+
+  void onARViewCreated(
+    ARSessionManager arSessionManager,
+    ARObjectManager arObjectManager,
+    ARAnchorManager arAnchorManager,
+    ARLocationManager arLocationManager,
+  ) {
+    this.arSessionManager = arSessionManager;
+    this.arObjectManager = arObjectManager;
+    this.arAnchorManager = arAnchorManager;
+
+    this.arSessionManager!.onInitialize(
+      showFeaturePoints: false,
+      showPlanes: true,
+      customPlaneTexturePath: "Images/triangle.png",
+      showWorldOrigin: true,
+    );
+    this.arObjectManager!.onInitialize();
+
+    this.arSessionManager!.onPlaneOrPointTap = onPlaneOrPointTapped;
+    this.arObjectManager!.onNodeTap = onNodeTapped;
+  }
+
+  Future<void> onRemoveEverything() async {
+    /*nodes.forEach((node) {
+      this.arObjectManager.removeNode(node);
+    });*/
+    for (var anchor in anchors) {
+      arAnchorManager!.removeAnchor(anchor);
+    }
+    anchors = [];
+  }
+
+  Future<void> onNodeTapped(List<String> nodes) async {
+    var number = nodes.length;
+    AlertDialog(
+      title: Text("Information"),
+      content: Text("Tapped $number node(s)"),
+    );
+  }
+
+  Future<void> onPlaneOrPointTapped(
+    List<ARHitTestResult> hitTestResults,
+  ) async {
+    var singleHitTestResult = hitTestResults.firstWhere(
+      (hitTestResult) => hitTestResult.type == ARHitTestResultType.plane,
+    );
+    var newAnchor = ARPlaneAnchor(
+      transformation: singleHitTestResult.worldTransform,
+    );
+    bool? didAddAnchor = await arAnchorManager!.addAnchor(newAnchor);
+    if (didAddAnchor!) {
+      anchors.add(newAnchor);
+      // Add note to anchor
+      var newNode = ARNode(
+        type: NodeType.webGLB,
+        uri:
+            "https://github.com/KhronosGroup/glTF-Sample-Models/raw/refs/heads/main/2.0/Duck/glTF-Binary/Duck.glb",
+        scale: vector_math.Vector3(0.2, 0.2, 0.2),
+        position: vector_math.Vector3(0.0, 0.0, 0.0),
+        rotation: vector_math.Vector4(1.0, 0.0, 0.0, 0.0),
+      );
+      bool? didAddNodeToAnchor = await arObjectManager!.addNode(
+        newNode,
+        planeAnchor: newAnchor,
+      );
+      if (didAddNodeToAnchor!) {
+        nodes.add(newNode);
+      } else {
+        AlertDialog(
+          title: Text("Error"),
+          content: Text("Adding Node to Anchor failed"),
+        );
+      }
+    } else {
+      AlertDialog(
+        title: Text("Error"),
+        content: Text("Adding Anchor failed"),
+      );
+    }
+      /*
+      // To add a node to the tapped position without creating an anchor, use the following code (Please mind: the function onRemoveEverything has to be adapted accordingly!):
+      var newNode = ARNode(
+          type: NodeType.localGLTF2,
+          uri: "Models/Chicken_01/Chicken_01.gltf",
+          scale: Vector3(0.2, 0.2, 0.2),
+          transformation: singleHitTestResult.worldTransform);
+      bool didAddWebNode = await arObjectManager.addNode(newNode);
+      if (didAddWebNode) {
+        nodes.add(newNode);
+      }*/
+    }
+  }
