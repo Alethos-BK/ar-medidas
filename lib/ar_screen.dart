@@ -12,20 +12,23 @@ import 'package:ar_flutter_plugin_2/models/ar_node.dart';
 import 'package:ar_flutter_plugin_2/ar_flutter_plugin.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
 
-class ObjectsOnPlanes extends StatefulWidget {
-  const ObjectsOnPlanes({super.key});
+class ArScreen extends StatefulWidget {
+  const ArScreen({super.key});
 
   @override
-  State<ObjectsOnPlanes> createState() => _ObjectsOnPlanesState();
+  State<ArScreen> createState() => _ArScreenState();
 }
 
-class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
+class _ArScreenState extends State<ArScreen> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
   ARAnchorManager? arAnchorManager;
 
   List<ARNode> nodes = [];
   List<ARAnchor> anchors = [];
+
+  vector_math.Vector3? lastPosition;
+  String? lastDistance;
 
   @override
   void dispose() {
@@ -36,7 +39,7 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AR - Objetos no Plano')),
+      appBar: AppBar(title: const Text('AR Medidas')),
       body: Stack(
         children: [
           ARView(
@@ -50,6 +53,29 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
               child: const Text("Remover Tudo"),
             ),
           ),
+          if (lastDistance != null)
+            Positioned(
+              top: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    "Distância: $lastDistance",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -66,9 +92,9 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
     this.arAnchorManager = arAnchorManager;
 
     this.arSessionManager!.onInitialize(
-      showFeaturePoints: false,
-      showPlanes: true,
-      showWorldOrigin: true,
+      showFeaturePoints: true,
+      showPlanes: false,
+      showWorldOrigin: false,
     );
     this.arObjectManager!.onInitialize();
     this.arSessionManager!.onPlaneOrPointTap = onPlaneOrPointTapped;
@@ -78,7 +104,15 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
     for (var anchor in anchors) {
       arAnchorManager!.removeAnchor(anchor);
     }
+    for (var node in nodes) {
+      arObjectManager!.removeNode(node);
+    }
     anchors.clear();
+    nodes.clear();
+    lastPosition = null;
+    setState(() {
+      lastDistance = null;
+    });
   }
 
   Future<void> onPlaneOrPointTapped(
@@ -88,9 +122,16 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       (hitTestResult) => hitTestResult.type == ARHitTestResultType.plane,
     );
 
+    var position = vector_math.Vector3(
+      singleHitTestResult.worldTransform.getColumn(3).x,
+      singleHitTestResult.worldTransform.getColumn(3).y,
+      singleHitTestResult.worldTransform.getColumn(3).z,
+    );
+
     var newAnchor = ARPlaneAnchor(
       transformation: singleHitTestResult.worldTransform,
     );
+
     bool? didAddAnchor = await arAnchorManager!.addAnchor(newAnchor);
 
     if (didAddAnchor!) {
@@ -99,10 +140,9 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       var newNode = ARNode(
         type: NodeType.webGLB,
         uri:
-            "https://github.com/KhronosGroup/glTF-Sample-Models/raw/refs/heads/main/2.0/Duck/glTF-Binary/Duck.glb",
-        scale: vector_math.Vector3(0.2, 0.2, 0.2),
-        position: vector_math.Vector3(0.0, 0.0, 0.0),
-        rotation: vector_math.Vector4(1.0, 0.0, 0.0, 0.0),
+            "https://github.com/KhronosGroup/glTF-Sample-Assets/raw/main/Models/ClearCoatCarPaint/glTF-Binary/ClearCoatCarPaint.glb",
+        scale: vector_math.Vector3.all(0.04),
+        position: vector_math.Vector3.zero(),
       );
 
       bool? didAddNodeToAnchor = await arObjectManager!.addNode(
@@ -113,6 +153,18 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       if (didAddNodeToAnchor!) {
         nodes.add(newNode);
       }
+      
+      if (lastPosition != null) {
+        setState(() {
+          lastDistance = _calculateDistanceBetweenPoints(position, lastPosition!);
+        });
+      }
+      lastPosition = position;
     }
+  }
+
+  String _calculateDistanceBetweenPoints(vector_math.Vector3 A, vector_math.Vector3 B) {
+    final length = A.distanceTo(B);
+    return "${(length * 100).toStringAsFixed(2)} cm";
   }
 }
