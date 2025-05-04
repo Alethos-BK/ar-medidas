@@ -27,13 +27,16 @@ class _ArScreenState extends State<ArScreen> {
   ARObjectManager? arObjectManager;
   ARAnchorManager? arAnchorManager;
 
+  final ScreenshotController screenshotController = ScreenshotController();
+
   List<ARNode> nodes = [];
   List<ARAnchor> anchors = [];
 
+  String selectedUnit = 'cm';
   vector_math.Vector3? lastPosition;
   String? lastDistance;
-
-  final ScreenshotController screenshotController = ScreenshotController();
+  late double currentDistance;
+  double totalDistance = 0.0;
 
   @override
   void dispose() {
@@ -54,18 +57,83 @@ class _ArScreenState extends State<ArScreen> {
               planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
             ),
             Align(
-              alignment: FractionalOffset.bottomCenter,
+              alignment: const FractionalOffset(0.5, 0.985),
               child: ElevatedButton(
                 onPressed: onRemoveEverything,
                 child: const Text("Remover Tudo"),
               ),
             ),
             Align(
-              alignment: const FractionalOffset(0.90, 0.92),
+              alignment: const FractionalOffset(0.90, 0.98),
               child: FloatingActionButton(
                 onPressed: takeScreenshot,
                 tooltip: 'Capturar Tela',
-                child: const Icon(Icons.center_focus_weak_outlined, size: 36),
+                child: const Icon(Icons.center_focus_strong_outlined, size: 36),
+              ),
+            ),
+            Align(
+              alignment: const FractionalOffset(0.10, 0.98),
+              child: FloatingActionButton(
+                onPressed: onUndo, //TODO
+                tooltip: 'Desfazer',
+                child: const Icon(Icons.undo_rounded, size: 36),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 112.0),
+                child: DropdownMenu<String>(
+                  initialSelection: selectedUnit,
+                  trailingIcon: const Icon(Icons.arrow_drop_down, size: 21),
+                  inputDecorationTheme: InputDecorationTheme(
+                    isDense: true,
+                    filled: true,
+                    fillColor: Colors.white.withAlpha((0.8 * 255).toInt()),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    constraints: BoxConstraints.tight(
+                      const Size.fromHeight(42),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onSelected: (value) {
+                    setState(() {
+                      selectedUnit = value!;
+                    });
+                    if (lastDistance != null) {
+                      setState(() {
+                        lastDistance =
+                            "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
+                      });
+                    }
+                  },
+                  dropdownMenuEntries: const [
+                    DropdownMenuEntry(value: 'mm', label: 'Milímetros'),
+                    DropdownMenuEntry(value: 'cm', label: 'Centímetros'),
+                    DropdownMenuEntry(value: 'm', label: 'Metros'),
+                    DropdownMenuEntry(value: 'in', label: 'Polegadas'),
+                    DropdownMenuEntry(value: 'ft', label: 'Pés'),
+                    DropdownMenuEntry(value: 'yd', label: 'Jardas'),
+                  ],
+                  menuStyle: MenuStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                      Colors.white.withAlpha((0.6 * 255).toInt()),
+                    ),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             if (lastDistance != null)
@@ -84,7 +152,8 @@ class _ArScreenState extends State<ArScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      "Distância: $lastDistance",
+                      "$lastDistance",
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -129,6 +198,7 @@ class _ArScreenState extends State<ArScreen> {
     anchors.clear();
     nodes.clear();
     lastPosition = null;
+    totalDistance = 0.0;
     setState(() {
       lastDistance = null;
     });
@@ -208,23 +278,47 @@ class _ArScreenState extends State<ArScreen> {
             }
           }
         }
+
+        currentDistance = _calculateDistanceBetweenPoints(
+          position,
+          lastPosition!,
+        );
+        totalDistance += currentDistance;
+
         setState(() {
-          lastDistance = _calculateDistanceBetweenPoints(
-            position,
-            lastPosition!,
-          );
+          lastDistance =
+              "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
         });
       }
       lastPosition = position;
     }
   }
 
-  String _calculateDistanceBetweenPoints(
+  Future<void> onUndo() async {} //TODO
+
+  double _calculateDistanceBetweenPoints(
     vector_math.Vector3 A,
     vector_math.Vector3 B,
   ) {
-    final length = A.distanceTo(B);
-    return "${(length * 100).toStringAsFixed(2)} cm";
+    return A.distanceTo(B);
+  }
+
+  String _formatDistance(double distance, String unit) {
+    switch (unit) {
+      case 'mm':
+        return "${(distance * 1000).toStringAsFixed(2)} mm";
+      case 'cm':
+        return "${(distance * 100).toStringAsFixed(2)} cm";
+      case 'in':
+        return "${(distance * 39.3701).toStringAsFixed(2)} in";
+      case 'ft':
+        return "${(distance * 3.28084).toStringAsFixed(2)} ft";
+      case 'yd':
+        return "${(distance * 1.09361).toStringAsFixed(2)} yd";
+      case 'm':
+      default:
+        return "${distance.toStringAsFixed(2)} m";
+    }
   }
 
   Future<void> takeScreenshot() async {
