@@ -1,3 +1,4 @@
+import 'package:ar_medidas/screens/history_screen.dart';
 import 'package:flutter/material.dart';
 import 'ar_screen.dart';
 
@@ -21,12 +22,22 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const ArScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const ArScreen()),
                 );
               },
               child: const Text("Iniciar programa"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HistoryScreen(),
+                  ),
+                );
+              },
+              child: const Text("Histórico"),
             ),
           ],
         ),

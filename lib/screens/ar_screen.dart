@@ -1,3 +1,5 @@
+import 'package:ar_medidas/models/measurement.dart';
+import 'package:ar_medidas/repositories/measurement_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_flutter_plugin_2/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
@@ -61,6 +63,14 @@ class _ArScreenState extends State<ArScreen> {
               child: ElevatedButton(
                 onPressed: onRemoveEverything,
                 child: const Text("Remover Tudo"),
+              ),
+            ),
+            if (totalDistance > 0.0) const SizedBox(height: 20),
+            Align(
+              alignment: const FractionalOffset(0.5, 0.93),
+              child: ElevatedButton(
+                onPressed: _saveMeasurement,
+                child: const Text("Salvar Medição"),
               ),
             ),
             Align(
@@ -167,6 +177,20 @@ class _ArScreenState extends State<ArScreen> {
         ),
       ),
     );
+  }
+
+  void _saveMeasurement() {
+    final measurement = Measurement(
+      timestamp: DateTime.now(),
+      totalDistance: _formatDistance(totalDistance.toDouble(), selectedUnit),
+      unit: selectedUnit,
+    );
+
+    MeasurementRepository().addMeasurement(measurement);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Medição salva com sucesso!')));
   }
 
   void onARViewCreated(
