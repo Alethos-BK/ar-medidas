@@ -1,6 +1,9 @@
-import 'package:ar_medidas/models/measurement.dart';
-import 'package:ar_medidas/repositories/measurement_repository.dart';
+import 'dart:developer';
+import 'package:ar_medidas/screens/history_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:vector_math/vector_math_64.dart' as vector_math;
+import 'package:screenshot/screenshot.dart';
+import 'package:gal/gal.dart';
 import 'package:ar_flutter_plugin_2/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
 import 'package:ar_flutter_plugin_2/datatypes/hittest_result_types.dart';
@@ -12,10 +15,9 @@ import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_2/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
 import 'package:ar_flutter_plugin_2/models/ar_node.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:gal/gal.dart';
-import 'dart:developer';
-import 'package:vector_math/vector_math_64.dart' as vector_math;
+import 'package:ar_medidas/models/measurement_segment.dart';
+import 'package:ar_medidas/models/measurement.dart';
+import 'package:ar_medidas/repositories/measurement_repository.dart';
 
 class ArScreen extends StatefulWidget {
   const ArScreen({super.key});
@@ -28,8 +30,8 @@ class _ArScreenState extends State<ArScreen> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
   ARAnchorManager? arAnchorManager;
-
   final ScreenshotController screenshotController = ScreenshotController();
+  List<MeasurementSegment> measurementSegments = [];
 
   List<ARNode> nodes = [];
   List<ARAnchor> anchors = [];
@@ -49,7 +51,26 @@ class _ArScreenState extends State<ArScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('AR Medidas')),
+      appBar: AppBar(
+        title: const Text('AR Medidas'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded),
+          tooltip: 'Retornar',
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history_rounded),
+            tooltip: 'Acessar Histórico de Medições',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Screenshot(
         controller: screenshotController,
         child: Stack(
@@ -60,21 +81,27 @@ class _ArScreenState extends State<ArScreen> {
             ),
             Align(
               alignment: const FractionalOffset(0.5, 0.985),
-              child: ElevatedButton(
-                onPressed: onRemoveEverything,
-                child: const Text("Remover Tudo"),
+              child: Tooltip(
+                message: 'Remover Todas Medições',
+                child: ElevatedButton(
+                  onPressed: onRemoveEverything,
+                  child: const Text("Remover Tudo"),
+                ),
               ),
             ),
             if (totalDistance > 0.0) const SizedBox(height: 20),
             Align(
-              alignment: const FractionalOffset(0.5, 0.93),
-              child: ElevatedButton(
-                onPressed: _saveMeasurement,
-                child: const Text("Salvar Medição"),
+              alignment: const FractionalOffset(0.5, 0.9),
+              child: Tooltip(
+                message: 'Salvar Medição',
+                child: ElevatedButton(
+                  onPressed: _saveMeasurement,
+                  child: const Text("Salvar Medição"),
+                ),
               ),
             ),
             Align(
-              alignment: const FractionalOffset(0.90, 0.98),
+              alignment: const FractionalOffset(0.90, 0.95),
               child: FloatingActionButton(
                 onPressed: takeScreenshot,
                 tooltip: 'Capturar Tela',
@@ -82,10 +109,10 @@ class _ArScreenState extends State<ArScreen> {
               ),
             ),
             Align(
-              alignment: const FractionalOffset(0.10, 0.98),
+              alignment: const FractionalOffset(0.10, 0.95),
               child: FloatingActionButton(
-                onPressed: onUndo, //TODO
-                tooltip: 'Desfazer',
+                onPressed: onUndo,
+                tooltip: 'Desfazer Medição',
                 child: const Icon(Icons.undo_rounded, size: 36),
               ),
             ),
@@ -99,7 +126,9 @@ class _ArScreenState extends State<ArScreen> {
                   inputDecorationTheme: InputDecorationTheme(
                     isDense: true,
                     filled: true,
-                    fillColor: Colors.white.withAlpha((0.8 * 255).toInt()),
+                    fillColor: Theme.of(
+                      context,
+                    ).colorScheme.surface.withAlpha((0.8 * 255).toInt()),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     constraints: BoxConstraints.tight(
                       const Size.fromHeight(42),
@@ -130,7 +159,9 @@ class _ArScreenState extends State<ArScreen> {
                   ],
                   menuStyle: MenuStyle(
                     backgroundColor: WidgetStatePropertyAll(
-                      Colors.white.withAlpha((0.6 * 255).toInt()),
+                      Theme.of(
+                        context,
+                      ).colorScheme.surface.withAlpha((0.6 * 255).toInt()),
                     ),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
@@ -158,14 +189,17 @@ class _ArScreenState extends State<ArScreen> {
                       horizontal: 16,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withAlpha((0.6 * 255).toInt()),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withAlpha((0.6 * 255).toInt()),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       "$lastDistance",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -266,7 +300,18 @@ class _ArScreenState extends State<ArScreen> {
         nodes.add(newNode);
       }
 
-      if (lastPosition != null) {
+      if (lastPosition == null) {
+        measurementSegments.add(
+          MeasurementSegment(
+            lineNodes: [],
+            lineAnchors: [],
+            position: position,
+            distance: 0.0,
+          ),
+        );
+      } else {
+        List<ARNode> segmentNodes = [];
+        List<ARAnchor> segmentAnchors = [];
         int numberOfNodes = 20;
 
         for (int i = 1; i <= numberOfNodes; i++) {
@@ -279,11 +324,11 @@ class _ArScreenState extends State<ArScreen> {
                 ..setTranslation(interpolatedPosition);
 
           var lineAnchor = ARPlaneAnchor(transformation: transform);
-
           bool? anchorAdded = await arAnchorManager!.addAnchor(lineAnchor);
 
           if (anchorAdded!) {
             anchors.add(lineAnchor);
+            segmentAnchors.add(lineAnchor);
 
             var lineNode = ARNode(
               type: NodeType.localGLTF2,
@@ -299,6 +344,7 @@ class _ArScreenState extends State<ArScreen> {
 
             if (nodeAddedToAnchor!) {
               nodes.add(lineNode);
+              segmentNodes.add(lineNode);
             }
           }
         }
@@ -309,6 +355,15 @@ class _ArScreenState extends State<ArScreen> {
         );
         totalDistance += currentDistance;
 
+        measurementSegments.add(
+          MeasurementSegment(
+            lineNodes: segmentNodes,
+            lineAnchors: segmentAnchors,
+            position: lastPosition!,
+            distance: currentDistance,
+          ),
+        );
+
         setState(() {
           lastDistance =
               "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
@@ -317,8 +372,6 @@ class _ArScreenState extends State<ArScreen> {
       lastPosition = position;
     }
   }
-
-  Future<void> onUndo() async {} //TODO
 
   double _calculateDistanceBetweenPoints(
     vector_math.Vector3 A,
@@ -345,6 +398,48 @@ class _ArScreenState extends State<ArScreen> {
     }
   }
 
+  Future<void> onUndo() async {
+    if (measurementSegments.isEmpty) return;
+
+    final lastSegment = measurementSegments.removeLast();
+
+    for (var node in lastSegment.lineNodes) {
+      await arObjectManager!.removeNode(node);
+      nodes.remove(node);
+    }
+
+    for (var anchor in lastSegment.lineAnchors) {
+      await arAnchorManager!.removeAnchor(anchor);
+      anchors.remove(anchor);
+    }
+
+    if (nodes.isNotEmpty) {
+      await arObjectManager!.removeNode(nodes.last);
+      nodes.removeLast();
+    }
+
+    if (anchors.isNotEmpty) {
+      await arAnchorManager!.removeAnchor(anchors.last);
+      anchors.removeLast();
+    }
+
+    totalDistance -= lastSegment.distance;
+
+    lastPosition = lastSegment.position;
+
+    setState(() {
+      if (measurementSegments.isNotEmpty) {
+        currentDistance = measurementSegments.last.distance;
+        lastDistance =
+            "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
+      } else {
+        lastPosition = null;
+        currentDistance = 0.0;
+        lastDistance = null;
+      }
+    });
+  }
+
   Future<void> takeScreenshot() async {
     final image = await screenshotController.capture();
 
@@ -365,8 +460,18 @@ class _ArScreenState extends State<ArScreen> {
 
     try {
       await Gal.putImageBytes(image, album: 'Screenshots');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Captura de tela salva com sucesso!')),
+        );
+      }
     } on GalException catch (e) {
       log(getErrorMessage(e.type));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(getErrorMessage(e.type))));
+      }
     }
   }
 }
