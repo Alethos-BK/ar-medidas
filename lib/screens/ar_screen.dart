@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'package:ar_medidas/screens/history_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
 import 'package:screenshot/screenshot.dart';
 import 'package:gal/gal.dart';
@@ -18,6 +18,7 @@ import 'package:ar_flutter_plugin_2/models/ar_node.dart';
 import 'package:ar_medidas/models/measurement_segment.dart';
 import 'package:ar_medidas/models/measurement.dart';
 import 'package:ar_medidas/repositories/measurement_repository.dart';
+import 'package:ar_medidas/screens/history_screen.dart';
 
 class ArScreen extends StatefulWidget {
   const ArScreen({super.key});
@@ -183,25 +184,40 @@ class _ArScreenState extends State<ArScreen> {
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withAlpha((0.6 * 255).toInt()),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      "$lastDistance",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  child: GestureDetector(
+                    onLongPress: () {
+                      Clipboard.setData(ClipboardData(text: "$lastDistance"));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Distância copiada!"),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withAlpha((0.6 * 255).toInt()),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        "$lastDistance",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -222,9 +238,14 @@ class _ArScreenState extends State<ArScreen> {
 
     MeasurementRepository().addMeasurement(measurement);
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Medição salva com sucesso!')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Medição salva com sucesso!'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
   }
 
   void onARViewCreated(
@@ -462,15 +483,29 @@ class _ArScreenState extends State<ArScreen> {
       await Gal.putImageBytes(image, album: 'Screenshots');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Captura de tela salva com sucesso!')),
+          SnackBar(
+            content: Text('Captura de tela salva com sucesso!'),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
         );
       }
     } on GalException catch (e) {
       log(getErrorMessage(e.type));
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getErrorMessage(e.type))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(getErrorMessage(e.type)),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        );
       }
     }
   }

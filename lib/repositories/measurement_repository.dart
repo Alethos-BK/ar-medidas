@@ -19,6 +19,10 @@ class MeasurementRepository {
     _measurements.remove(measurement);
   }
 
+  void clearAllMeasurements() {
+    _measurements.clear();
+  }
+
   List<Measurement> getAllMeasurements() {
     return _measurements.reversed.toList();
   }
