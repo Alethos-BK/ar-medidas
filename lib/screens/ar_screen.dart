@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:ar_medidas/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
@@ -53,15 +54,15 @@ class _ArScreenState extends State<ArScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AR Medidas'),
+        title: const Text('AR Medidas', style: TextStyle(color: Colors.white)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: AppStyles.backIcon,
           tooltip: 'Retornar',
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history_rounded),
+            icon: AppStyles.historyIcon,
             tooltip: 'Acessar Histórico de Medições',
             onPressed: () {
               Navigator.push(
@@ -84,37 +85,50 @@ class _ArScreenState extends State<ArScreen> {
               alignment: const FractionalOffset(0.5, 0.985),
               child: Tooltip(
                 message: 'Remover Todas Medições',
-                child: ElevatedButton(
-                  onPressed: onRemoveEverything,
-                  child: const Text("Remover Tudo"),
+                child: SizedBox(
+                  width: 206.5,
+                  child: ElevatedButton(
+                    onPressed: onRemoveEverything,
+                    child: const Text(
+                      "Remover Tudo",
+                      style: AppStyles.buttonText,
+                    ),
+                  ),
                 ),
               ),
             ),
-            if (totalDistance > 0.0) const SizedBox(height: 20),
+            if (totalDistance > 0.0)
+              const SizedBox(height: AppStyles.spacingMedium),
             Align(
               alignment: const FractionalOffset(0.5, 0.9),
               child: Tooltip(
                 message: 'Salvar Medição',
-                child: ElevatedButton(
-                  onPressed: _saveMeasurement,
-                  child: const Text("Salvar Medição"),
+                child: SizedBox(
+                  width: 206.5,
+                  child: ElevatedButton(
+                    onPressed: _saveMeasurement,
+                    child: const Text(
+                      "Salvar Medição",
+                      style: AppStyles.buttonText,
+                    ),
+                  ),
                 ),
               ),
             ),
             Align(
-              alignment: const FractionalOffset(0.90, 0.95),
+              alignment: const FractionalOffset(0.945, 0.948),
               child: FloatingActionButton(
                 onPressed: takeScreenshot,
                 tooltip: 'Capturar Tela',
-                child: const Icon(Icons.center_focus_strong_outlined, size: 36),
+                child: AppStyles.screenShotIcon,
               ),
             ),
             Align(
-              alignment: const FractionalOffset(0.10, 0.95),
+              alignment: const FractionalOffset(0.055, 0.948),
               child: FloatingActionButton(
                 onPressed: onUndo,
                 tooltip: 'Desfazer Medição',
-                child: const Icon(Icons.undo_rounded, size: 36),
+                child: AppStyles.undoIcon,
               ),
             ),
             Align(
@@ -123,22 +137,10 @@ class _ArScreenState extends State<ArScreen> {
                 padding: const EdgeInsets.only(top: 112.0),
                 child: DropdownMenu<String>(
                   initialSelection: selectedUnit,
-                  trailingIcon: const Icon(Icons.arrow_drop_down, size: 21),
-                  inputDecorationTheme: InputDecorationTheme(
-                    isDense: true,
-                    filled: true,
-                    fillColor: Theme.of(
-                      context,
-                    ).colorScheme.surface.withAlpha((0.8 * 255).toInt()),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    constraints: BoxConstraints.tight(
-                      const Size.fromHeight(42),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  trailingIcon: AppStyles.arrowDownIcon,
+                  selectedTrailingIcon: AppStyles.arrowUpIcon,
+                  inputDecorationTheme: AppStyles.inputDecoration,
+                  textStyle: AppStyles.listTileTitle,
                   onSelected: (value) {
                     setState(() {
                       selectedUnit = value!;
@@ -150,31 +152,57 @@ class _ArScreenState extends State<ArScreen> {
                       });
                     }
                   },
-                  dropdownMenuEntries: const [
-                    DropdownMenuEntry(value: 'mm', label: 'Milímetros'),
-                    DropdownMenuEntry(value: 'cm', label: 'Centímetros'),
-                    DropdownMenuEntry(value: 'm', label: 'Metros'),
-                    DropdownMenuEntry(value: 'in', label: 'Polegadas'),
-                    DropdownMenuEntry(value: 'ft', label: 'Pés'),
-                    DropdownMenuEntry(value: 'yd', label: 'Jardas'),
-                  ],
-                  menuStyle: MenuStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(
-                        context,
-                      ).colorScheme.surface.withAlpha((0.6 * 255).toInt()),
-                    ),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide.none,
+                  dropdownMenuEntries: [
+                    DropdownMenuEntry(
+                      value: 'mm',
+                      label: 'Milímetros',
+                      labelWidget: Text(
+                        'Milímetros',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
                       ),
                     ),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    DropdownMenuEntry(
+                      value: 'cm',
+                      label: 'Centímetros',
+                      labelWidget: Text(
+                        'Centímetros',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      ),
+                    ),
+                    DropdownMenuEntry(
+                      value: 'm',
+                      label: 'Metros',
+                      labelWidget: Text(
+                        'Metros',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      ),
+                    ),
+                    DropdownMenuEntry(
+                      value: 'in',
+                      label: 'Polegadas',
+                      labelWidget: Text(
+                        'Polegadas',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      ),
+                    ),
+                    DropdownMenuEntry(
+                      value: 'ft',
+                      label: 'Pés',
+                      labelWidget: Text(
+                        'Pés',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      ),
+                    ),
+                    DropdownMenuEntry(
+                      value: 'yd',
+                      label: 'Jardas',
+                      labelWidget: Text(
+                        'Jardas',
+                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                  menuStyle: AppStyles.menu,
                 ),
               ),
             ),
@@ -190,33 +218,17 @@ class _ArScreenState extends State<ArScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Distância copiada!"),
-                          behavior: SnackBarBehavior.floating,
                           duration: Duration(seconds: 2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
                         ),
                       );
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest
-                            .withAlpha((0.6 * 255).toInt()),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        "$lastDistance",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    child: Card(
+                      child: Padding(
+                        padding: AppStyles.paddingMedium,
+                        child: Text(
+                          "$lastDistance",
+                          textAlign: TextAlign.center,
+                          style: AppStyles.containerText,
                         ),
                       ),
                     ),
@@ -241,9 +253,7 @@ class _ArScreenState extends State<ArScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Medição salva com sucesso!'),
-        behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -307,7 +317,7 @@ class _ArScreenState extends State<ArScreen> {
 
       var newNode = ARNode(
         type: NodeType.localGLTF2,
-        uri: "assets/red_sphere.glb",
+        uri: "assets/turquoise_sphere.glb",
         scale: vector_math.Vector3.all(0.03),
         position: vector_math.Vector3.zero(),
       );
@@ -340,9 +350,8 @@ class _ArScreenState extends State<ArScreen> {
               lastPosition! +
               (position - lastPosition!) * (i / (numberOfNodes + 1));
 
-          var transform =
-              vector_math.Matrix4.identity()
-                ..setTranslation(interpolatedPosition);
+          var transform = vector_math.Matrix4.identity()
+            ..setTranslation(interpolatedPosition);
 
           var lineAnchor = ARPlaneAnchor(transformation: transform);
           bool? anchorAdded = await arAnchorManager!.addAnchor(lineAnchor);
@@ -353,7 +362,7 @@ class _ArScreenState extends State<ArScreen> {
 
             var lineNode = ARNode(
               type: NodeType.localGLTF2,
-              uri: "assets/white_sphere.glb",
+              uri: "assets/yellow_sphere.glb",
               scale: vector_math.Vector3.all(0.015),
               position: vector_math.Vector3.zero(),
             );
@@ -485,11 +494,7 @@ class _ArScreenState extends State<ArScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Captura de tela salva com sucesso!'),
-            behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
           ),
         );
       }
@@ -499,11 +504,7 @@ class _ArScreenState extends State<ArScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(getErrorMessage(e.type)),
-            behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
           ),
         );
       }

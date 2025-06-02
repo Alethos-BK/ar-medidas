@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ar_medidas/theme.dart';
 import '../screens/ar_screen.dart';
 import '../screens/history_screen.dart';
 
@@ -10,16 +11,16 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: AppStyles.paddingBig,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 "Bem-vindo ao nosso App de Medidas",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppStyles.spacingLarge),
               Tooltip(
                 message: 'Iniciar a Medição',
                 child: ElevatedButton.icon(
@@ -29,15 +30,14 @@ class HomeScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const ArScreen()),
                     );
                   },
-                  icon: const Icon(Icons.camera_alt_rounded, size: 24),
+                  icon: AppStyles.cameraIcon,
                   label: const Text("Iniciar Medição"),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    textStyle: const TextStyle(fontSize: 18),
+                    textStyle: AppStyles.buttonText,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppStyles.spacingMedium),
               Tooltip(
                 message: 'Acessar Histórico de Medições',
                 child: ElevatedButton.icon(
@@ -49,11 +49,11 @@ class HomeScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.history_rounded, size: 24),
+                  icon: AppStyles.historyIcon,
                   label: const Text("Acessar Histórico"),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    textStyle: const TextStyle(fontSize: 18),
+                    backgroundColor: AppColors.bambooBase,
+                    textStyle: AppStyles.buttonText,
                   ),
                 ),
               ),
