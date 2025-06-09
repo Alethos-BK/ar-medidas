@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:ar_medidas/theme.dart';
 import '../models/measurement.dart';
 import '../repositories/measurement_repository.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_styles.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -29,10 +30,11 @@ class HistoryScreenState extends State<HistoryScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
+          insetPadding: EdgeInsets.all(17),
           title: Row(
             children: [
-              AppStyles.warningIcon,
-              SizedBox(width: AppStyles.spacingSmall),
+              AppStyles.warningIcon(context),
+              SizedBox(width: AppStyles.spacingNormal),
               Text(
                 "Excluir a Medida?",
                 style: Theme.of(context).textTheme.titleLarge,
@@ -56,11 +58,14 @@ class HistoryScreenState extends State<HistoryScreen> {
                     },
                     label: const Text("Cancelar"),
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.cornBase,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? AppColors.cornBase
+                          : AppColors.cornShades[7],
                     ),
                   ),
                 ),
-                const SizedBox(width: AppStyles.spacingSmall),
+                const SizedBox(width: AppStyles.spacingNormal),
                 Tooltip(
                   message: 'Excluir Medida do Histórico',
                   child: TextButton.icon(
@@ -82,7 +87,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                     },
                     label: const Text("Excluir"),
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.bambooBase,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? AppColors.bambooBase
+                          : AppColors.oregonBase,
                     ),
                   ),
                 ),
@@ -100,10 +108,11 @@ class HistoryScreenState extends State<HistoryScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
+          insetPadding: EdgeInsets.all(17),
           title: Row(
             children: [
-              AppStyles.warningIcon,
-              SizedBox(width: AppStyles.spacingSmall),
+              AppStyles.warningIcon(context),
+              SizedBox(width: AppStyles.spacingNormal),
               Text(
                 "Limpar Histórico?",
                 style: Theme.of(context).textTheme.titleLarge,
@@ -127,11 +136,14 @@ class HistoryScreenState extends State<HistoryScreen> {
                     },
                     label: const Text("Cancelar"),
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.cornBase,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? AppColors.cornBase
+                          : AppColors.cornShades[7],
                     ),
                   ),
                 ),
-                const SizedBox(width: AppStyles.spacingSmall),
+                const SizedBox(width: AppStyles.spacingNormal),
                 Tooltip(
                   message: 'Limpar Todo o Histórico',
                   child: TextButton.icon(
@@ -151,7 +163,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                     },
                     label: const Text("Limpar"),
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.bambooBase,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? AppColors.bambooBase
+                          : AppColors.oregonBase,
                     ),
                   ),
                 ),
@@ -165,20 +180,42 @@ class HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: AppStyles.backIcon,
-          tooltip: 'Retornar',
-          onPressed: () => Navigator.pop(context),
+        leading: Builder(
+          builder: (context) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            return IconButton(
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                size: screenWidth > 400 ? 38 : 32,
+              ),
+              tooltip: 'Retornar',
+              onPressed: () => Navigator.pop(context),
+            );
+          },
         ),
-        title: const Text(
-          "Histórico-Medidas",
-          style: TextStyle(color: Colors.white),
+        centerTitle: true,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            return Text(
+              "Histórico de Medidas",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : Colors.black,
+                fontSize: constraints.maxWidth > 260 ? 24 : 20,
+              ),
+            );
+          },
         ),
         actions: [
           IconButton(
-            icon: AppStyles.deleteForeverIcon,
+            icon: Icon(
+              Icons.delete_forever_rounded,
+              size: screenWidth > 400 ? 38 : 32,
+            ),
             tooltip: 'Limpar Todo o Histórico',
             onPressed: _clearAllMeasurements,
           ),
@@ -189,9 +226,12 @@ class HistoryScreenState extends State<HistoryScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AppStyles.infoIcon,
+                  AppStyles.infoIcon(context),
                   const SizedBox(height: AppStyles.spacingNormal),
-                  Text("Nenhuma medida salva :(", style: AppStyles.fadedText),
+                  Text(
+                    "Nenhuma medida salva :(",
+                    style: AppStyles.fadedText(context),
+                  ),
                 ],
               ),
             )
@@ -204,7 +244,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                 final m = measurements[index];
                 return AppStyles.materialCard(
                   child: ListTile(
-                    leading: AppStyles.avatar(child: AppStyles.straightenIcon),
+                    leading: AppStyles.avatar(
+                      context: context,
+                      child: AppStyles.straightenIcon(context),
+                    ),
                     title: GestureDetector(
                       onLongPress: () {
                         Clipboard.setData(ClipboardData(text: m.totalDistance));
@@ -217,19 +260,21 @@ class HistoryScreenState extends State<HistoryScreen> {
                       },
                       child: Text(
                         m.totalDistance,
-                        style: AppStyles.listTileTitle,
+                        style: AppStyles.listTileTitle(context),
                       ),
                     ),
                     subtitle: Text(
                       DateFormat('dd/MM/yyyy HH:mm').format(m.timestamp),
-                      style: AppStyles.listTileSubtitle,
+                      style: AppStyles.listTileSubtitle(context),
                     ),
                     trailing: Tooltip(
-                      message: 'Excluir Medida',
+                      message: 'Excluir a Medida',
                       child: IconButton(
                         icon: AppStyles.deleteIcon,
                         onPressed: () => _deleteMeasurement(index),
-                        color: AppColors.bambooBase,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? AppColors.bambooBase
+                            : AppColors.oregonBase,
                       ),
                     ),
                   ),

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:ar_medidas/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
@@ -16,10 +15,11 @@ import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_2/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
 import 'package:ar_flutter_plugin_2/models/ar_node.dart';
-import 'package:ar_medidas/models/measurement_segment.dart';
-import 'package:ar_medidas/models/measurement.dart';
-import 'package:ar_medidas/repositories/measurement_repository.dart';
-import 'package:ar_medidas/screens/history_screen.dart';
+import '../models/measurement_segment.dart';
+import '../models/measurement.dart';
+import '../repositories/measurement_repository.dart';
+import '../screens/history_screen.dart';
+import '../theme/app_styles.dart';
 
 class ArScreen extends StatefulWidget {
   const ArScreen({super.key});
@@ -54,7 +54,15 @@ class _ArScreenState extends State<ArScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AR Medidas', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        title: Text(
+          'AR Medidas',
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
         leading: IconButton(
           icon: AppStyles.backIcon,
           tooltip: 'Retornar',
@@ -63,6 +71,7 @@ class _ArScreenState extends State<ArScreen> {
         actions: [
           IconButton(
             icon: AppStyles.historyIcon,
+            iconSize: 38,
             tooltip: 'Acessar Histórico de Medições',
             onPressed: () {
               Navigator.push(
@@ -135,74 +144,113 @@ class _ArScreenState extends State<ArScreen> {
               alignment: Alignment.topCenter,
               child: Padding(
                 padding: const EdgeInsets.only(top: 112.0),
-                child: DropdownMenu<String>(
-                  initialSelection: selectedUnit,
-                  trailingIcon: AppStyles.arrowDownIcon,
-                  selectedTrailingIcon: AppStyles.arrowUpIcon,
-                  inputDecorationTheme: AppStyles.inputDecoration,
-                  textStyle: AppStyles.listTileTitle,
-                  onSelected: (value) {
-                    setState(() {
-                      selectedUnit = value!;
-                    });
-                    if (lastDistance != null) {
+                child: Tooltip(
+                  message: 'Selecionar a unidade de medida',
+                  child: DropdownMenu<String>(
+                    initialSelection: selectedUnit,
+                    trailingIcon: Tooltip(
+                      message: 'Abrir lista de unidades',
+                      child: AppStyles.arrowDownIcon(context),
+                    ),
+                    selectedTrailingIcon: Tooltip(
+                      message: 'Fechar lista de unidades',
+                      child: AppStyles.arrowUpIcon(context),
+                    ),
+                    inputDecorationTheme: AppStyles.inputDecoration(context),
+                    textStyle: AppStyles.listTileTitle(context),
+                    onSelected: (value) {
                       setState(() {
-                        lastDistance =
-                            "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
+                        selectedUnit = value!;
                       });
-                    }
-                  },
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                      value: 'mm',
-                      label: 'Milímetros',
-                      labelWidget: Text(
-                        'Milímetros',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      if (lastDistance != null) {
+                        setState(() {
+                          lastDistance =
+                              "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
+                        });
+                      }
+                    },
+                    dropdownMenuEntries: [
+                      DropdownMenuEntry(
+                        value: 'mm',
+                        label: 'Milímetros',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para milímetros',
+                          child: Text(
+                            'Milímetros',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                    DropdownMenuEntry(
-                      value: 'cm',
-                      label: 'Centímetros',
-                      labelWidget: Text(
-                        'Centímetros',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      DropdownMenuEntry(
+                        value: 'cm',
+                        label: 'Centímetros',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para centímetros',
+                          child: Text(
+                            'Centímetros',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                    DropdownMenuEntry(
-                      value: 'm',
-                      label: 'Metros',
-                      labelWidget: Text(
-                        'Metros',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      DropdownMenuEntry(
+                        value: 'm',
+                        label: 'Metros',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para metros',
+                          child: Text(
+                            'Metros',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                    DropdownMenuEntry(
-                      value: 'in',
-                      label: 'Polegadas',
-                      labelWidget: Text(
-                        'Polegadas',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      DropdownMenuEntry(
+                        value: 'in',
+                        label: 'Polegadas',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para polegadas',
+                          child: Text(
+                            'Polegadas',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                    DropdownMenuEntry(
-                      value: 'ft',
-                      label: 'Pés',
-                      labelWidget: Text(
-                        'Pés',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      DropdownMenuEntry(
+                        value: 'ft',
+                        label: 'Pés',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para pés',
+                          child: Text(
+                            'Pés',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                    DropdownMenuEntry(
-                      value: 'yd',
-                      label: 'Jardas',
-                      labelWidget: Text(
-                        'Jardas',
-                        style: AppStyles.listTileTitle.copyWith(fontSize: 14),
+                      DropdownMenuEntry(
+                        value: 'yd',
+                        label: 'Jardas',
+                        labelWidget: Tooltip(
+                          message: 'Mudar a unidade para jardas',
+                          child: Text(
+                            'Jardas',
+                            style: AppStyles.listTileTitle(
+                              context,
+                            ).copyWith(fontSize: 14),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                  menuStyle: AppStyles.menu,
+                    ],
+                    menuStyle: AppStyles.menu(context),
+                  ),
                 ),
               ),
             ),
@@ -228,7 +276,7 @@ class _ArScreenState extends State<ArScreen> {
                         child: Text(
                           "$lastDistance",
                           textAlign: TextAlign.center,
-                          style: AppStyles.containerText,
+                          style: AppStyles.containerText(context),
                         ),
                       ),
                     ),
@@ -429,7 +477,15 @@ class _ArScreenState extends State<ArScreen> {
   }
 
   Future<void> onUndo() async {
-    if (measurementSegments.isEmpty) return;
+    if (measurementSegments.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Nenhuma medição para ser desfeita!'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
 
     final lastSegment = measurementSegments.removeLast();
 

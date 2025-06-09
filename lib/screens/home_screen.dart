@@ -1,14 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:ar_medidas/theme.dart';
 import '../screens/ar_screen.dart';
 import '../screens/history_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_styles.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final VoidCallback onThemeToggle;
+
+  const HomeScreen({super.key, required this.onThemeToggle});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'AR Medidas',
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.light
+                  ? Icons.dark_mode_rounded
+                  : Icons.light_mode_rounded,
+              size: 30,
+            ),
+            tooltip: 'Mudar Tema (Claro/Escuro)',
+            onPressed: () {
+              onThemeToggle();
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Padding(
           padding: AppStyles.paddingBig,
@@ -49,10 +77,13 @@ class HomeScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: AppStyles.historyIcon,
+                  icon: Icon(Icons.history_rounded, size: 30),
                   label: const Text("Acessar Histórico"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bambooBase,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                        ? AppColors.bambooBase
+                        : AppColors.oregonBase,
                     textStyle: AppStyles.buttonText,
                   ),
                 ),
