@@ -6,13 +6,19 @@ final ThemeData appThemeLight = ThemeData(
   brightness: Brightness.light,
   primaryColor: AppColors.robinEggBase,
   scaffoldBackgroundColor: AppColors.caperShades[0],
-  appBarTheme: AppBarTheme(backgroundColor: AppColors.robinEggBase),
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.robinEggBase,
+    elevation: 4,
+    shadowColor: Colors.black.withAlpha((0.2 * 255).toInt()),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
       backgroundColor: AppColors.cornBase,
       minimumSize: const Size.fromHeight(50),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      shadowColor: Colors.black.withAlpha((0.2 * 255).toInt()),
     ),
   ),
   buttonTheme: ButtonThemeData(
@@ -25,6 +31,7 @@ final ThemeData appThemeLight = ThemeData(
       foregroundColor: Colors.white,
       textStyle: AppStyles.buttonText,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
     ),
   ),
   iconButtonTheme: IconButtonThemeData(
@@ -53,15 +60,19 @@ final ThemeData appThemeLight = ThemeData(
       fontWeight: FontWeight.bold,
     ),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 4,
   ),
   dialogTheme: DialogThemeData(
     backgroundColor: AppColors.caperBase,
     insetPadding: const EdgeInsets.all(25),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 4,
+    shadowColor: Colors.black.withAlpha((0.2 * 255).toInt()),
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: AppColors.bambooBase,
     foregroundColor: Colors.white,
+    elevation: 4,
   ),
   listTileTheme: ListTileThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -72,6 +83,8 @@ final ThemeData appThemeLight = ThemeData(
     color: AppColors.caperBase.withAlpha((0.6 * 255).toInt()),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     margin: EdgeInsets.zero,
+    elevation: 4,
+    shadowColor: Colors.black.withAlpha((0.2 * 255).toInt()),
   ),
 );
 
@@ -79,13 +92,19 @@ final ThemeData appDarkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: AppColors.robinEggShades[8],
   scaffoldBackgroundColor: AppColors.caperShades[9],
-  appBarTheme: AppBarTheme(backgroundColor: AppColors.robinEggShades[8]),
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.robinEggShades[8],
+    elevation: 4,
+    shadowColor: Colors.white.withAlpha((0.2 * 255).toInt()),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.black,
       backgroundColor: AppColors.cornShades[6],
       minimumSize: const Size.fromHeight(50),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      shadowColor: Colors.white.withAlpha((0.2 * 255).toInt()),
     ),
   ),
   buttonTheme: ButtonThemeData(
@@ -98,6 +117,7 @@ final ThemeData appDarkTheme = ThemeData(
       foregroundColor: Colors.black,
       textStyle: AppStyles.buttonText,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
     ),
   ),
   iconButtonTheme: IconButtonThemeData(
@@ -126,15 +146,19 @@ final ThemeData appDarkTheme = ThemeData(
       fontWeight: FontWeight.bold,
     ),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 4,
   ),
   dialogTheme: DialogThemeData(
     backgroundColor: AppColors.caperShades[8],
     insetPadding: const EdgeInsets.all(25),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 4,
+    shadowColor: Colors.white.withAlpha((0.2 * 255).toInt()),
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: AppColors.oregonBase,
     foregroundColor: Colors.black,
+    elevation: 4,
   ),
   listTileTheme: ListTileThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -145,5 +169,7 @@ final ThemeData appDarkTheme = ThemeData(
     color: AppColors.caperShades[8].withAlpha((0.6 * 255).toInt()),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     margin: EdgeInsets.zero,
+    elevation: 4,
+    shadowColor: Colors.white.withAlpha((0.2 * 255).toInt()),
   ),
 );

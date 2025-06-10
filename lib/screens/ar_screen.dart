@@ -129,7 +129,7 @@ class _ArScreenState extends State<ArScreen> {
               child: FloatingActionButton(
                 onPressed: takeScreenshot,
                 tooltip: 'Capturar Tela',
-                child: AppStyles.screenShotIcon,
+                child: AppStyles.screenShotIcon, 
               ),
             ),
             Align(

@@ -30,6 +30,10 @@ class HistoryScreenState extends State<HistoryScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
+          elevation: 4,
+          shadowColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.black.withAlpha((0.2 * 255).toInt())
+              : Colors.white.withAlpha((0.2 * 255).toInt()),
           insetPadding: EdgeInsets.all(17),
           title: Row(
             children: [
@@ -62,6 +66,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                           Theme.of(context).brightness == Brightness.light
                           ? AppColors.cornBase
                           : AppColors.cornShades[7],
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? Colors.black.withAlpha((0.2 * 255).toInt())
+                          : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -91,6 +99,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                           Theme.of(context).brightness == Brightness.light
                           ? AppColors.bambooBase
                           : AppColors.oregonBase,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? Colors.black.withAlpha((0.2 * 255).toInt())
+                          : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -140,6 +152,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                           Theme.of(context).brightness == Brightness.light
                           ? AppColors.cornBase
                           : AppColors.cornShades[7],
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? Colors.black.withAlpha((0.2 * 255).toInt())
+                          : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -167,6 +183,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                           Theme.of(context).brightness == Brightness.light
                           ? AppColors.bambooBase
                           : AppColors.oregonBase,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.light
+                          ? Colors.black.withAlpha((0.2 * 255).toInt())
+                          : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -243,6 +263,7 @@ class HistoryScreenState extends State<HistoryScreen> {
               itemBuilder: (context, index) {
                 final m = measurements[index];
                 return AppStyles.materialCard(
+                  context: context,
                   child: ListTile(
                     leading: AppStyles.avatar(
                       context: context,

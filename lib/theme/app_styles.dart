@@ -126,12 +126,24 @@ class AppStyles {
       ),
     ),
     maximumSize: WidgetStatePropertyAll(Size(300, double.infinity)),
+    elevation: WidgetStatePropertyAll(4),
+    shadowColor: WidgetStatePropertyAll(
+      Theme.of(context).brightness == Brightness.light
+          ? Colors.black.withAlpha((0.2 * 255).toInt())
+          : Colors.white.withAlpha((0.2 * 255).toInt()),
+    ),
   );
 
-  static Widget materialCard({required Widget child}) {
+  static Widget materialCard({
+    required Widget child,
+    required BuildContext context,
+  }) {
     return Material(
-      elevation: 2,
+      elevation: 4,
       borderRadius: BorderRadius.circular(12),
+      shadowColor: Theme.of(context).brightness == Brightness.light
+          ? Colors.black.withAlpha((0.2 * 255).toInt())
+          : Colors.white.withAlpha((0.2 * 255).toInt()),
       child: child,
     );
   }

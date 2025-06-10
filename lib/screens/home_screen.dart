@@ -43,6 +43,22 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Material(
+                elevation: 4,
+                shape: CircleBorder(),
+                shadowColor: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black.withAlpha((0.2 * 255).toInt())
+                    : Colors.white.withAlpha((0.2 * 255).toInt()),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/Image.png',
+                    width: 125,
+                    height: 125,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppStyles.spacingMedium),
               Text(
                 "Bem-vindo ao nosso App de Medidas",
                 style: Theme.of(context).textTheme.titleLarge,
