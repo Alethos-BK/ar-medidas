@@ -129,7 +129,7 @@ class _ArScreenState extends State<ArScreen> {
               child: FloatingActionButton(
                 onPressed: takeScreenshot,
                 tooltip: 'Capturar Tela',
-                child: AppStyles.screenShotIcon, 
+                child: AppStyles.screenShotIcon,
               ),
             ),
             Align(
@@ -363,9 +363,13 @@ class _ArScreenState extends State<ArScreen> {
     if (didAddAnchor!) {
       anchors.add(newAnchor);
 
+      if (!mounted) return;
+
       var newNode = ARNode(
         type: NodeType.localGLTF2,
-        uri: "assets/turquoise_sphere.glb",
+        uri: Theme.of(context).brightness == Brightness.light
+            ? "assets/turquoise_sphere.glb"
+            : "assets/dark_turquoise_sphere.glb",
         scale: vector_math.Vector3.all(0.03),
         position: vector_math.Vector3.zero(),
       );
@@ -408,9 +412,13 @@ class _ArScreenState extends State<ArScreen> {
             anchors.add(lineAnchor);
             segmentAnchors.add(lineAnchor);
 
+            if (!mounted) return;
+
             var lineNode = ARNode(
               type: NodeType.localGLTF2,
-              uri: "assets/yellow_sphere.glb",
+              uri: Theme.of(context).brightness == Brightness.light
+                  ? "assets/yellow_sphere.glb"
+                  : "assets/dark_yellow_sphere.glb",
               scale: vector_math.Vector3.all(0.015),
               position: vector_math.Vector3.zero(),
             );
