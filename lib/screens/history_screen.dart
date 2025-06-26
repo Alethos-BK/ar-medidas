@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/measurement.dart';
 import '../repositories/measurement_repository.dart';
@@ -31,9 +32,10 @@ class HistoryScreenState extends State<HistoryScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 4,
-          shadowColor: Theme.of(context).brightness == Brightness.light
-              ? Colors.black.withAlpha((0.2 * 255).toInt())
-              : Colors.white.withAlpha((0.2 * 255).toInt()),
+          shadowColor:
+              Theme.of(context).brightness == Brightness.light
+                  ? Colors.black.withAlpha((0.2 * 255).toInt())
+                  : Colors.white.withAlpha((0.2 * 255).toInt()),
           insetPadding: EdgeInsets.all(17),
           title: Row(
             children: [
@@ -41,7 +43,7 @@ class HistoryScreenState extends State<HistoryScreen> {
               SizedBox(width: AppStyles.spacingNormal),
               Text(
                 "Excluir a Medida?",
-                style: Theme.of(context).textTheme.titleLarge,
+                style: AppStyles.containerText(context),
               ),
             ],
           ),
@@ -60,16 +62,16 @@ class HistoryScreenState extends State<HistoryScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    label: const Text("Cancelar"),
+                    label: Text("Cancelar", style: GoogleFonts.acme()),
                     style: TextButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? AppColors.cornBase
-                          : AppColors.cornShades[7],
+                              ? AppColors.cornBase
+                              : AppColors.cornShades[7],
                       shadowColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? Colors.black.withAlpha((0.2 * 255).toInt())
-                          : Colors.white.withAlpha((0.2 * 255).toInt()),
+                              ? Colors.black.withAlpha((0.2 * 255).toInt())
+                              : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -88,21 +90,24 @@ class HistoryScreenState extends State<HistoryScreen> {
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Medida excluída com sucesso!"),
+                          content: Text(
+                            "Medida excluída com sucesso!",
+                            style: GoogleFonts.acme(),
+                          ),
                           duration: Duration(seconds: 2),
                         ),
                       );
                     },
-                    label: const Text("Excluir"),
+                    label: Text("Excluir", style: GoogleFonts.acme()),
                     style: TextButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? AppColors.bambooBase
-                          : AppColors.oregonBase,
+                              ? AppColors.bambooBase
+                              : AppColors.oregonBase,
                       shadowColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? Colors.black.withAlpha((0.2 * 255).toInt())
-                          : Colors.white.withAlpha((0.2 * 255).toInt()),
+                              ? Colors.black.withAlpha((0.2 * 255).toInt())
+                              : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -146,16 +151,16 @@ class HistoryScreenState extends State<HistoryScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    label: const Text("Cancelar"),
+                    label: Text("Cancelar", style: GoogleFonts.acme()),
                     style: TextButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? AppColors.cornBase
-                          : AppColors.cornShades[7],
+                              ? AppColors.cornBase
+                              : AppColors.cornShades[7],
                       shadowColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? Colors.black.withAlpha((0.2 * 255).toInt())
-                          : Colors.white.withAlpha((0.2 * 255).toInt()),
+                              ? Colors.black.withAlpha((0.2 * 255).toInt())
+                              : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -172,21 +177,24 @@ class HistoryScreenState extends State<HistoryScreen> {
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Histórico limpo com sucesso!"),
+                          content: Text(
+                            "Histórico limpo com sucesso!",
+                            style: GoogleFonts.acme(),
+                          ),
                           duration: Duration(seconds: 3),
                         ),
                       );
                     },
-                    label: const Text("Limpar"),
+                    label: Text("Limpar", style: GoogleFonts.acme()),
                     style: TextButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? AppColors.bambooBase
-                          : AppColors.oregonBase,
+                              ? AppColors.bambooBase
+                              : AppColors.oregonBase,
                       shadowColor:
                           Theme.of(context).brightness == Brightness.light
-                          ? Colors.black.withAlpha((0.2 * 255).toInt())
-                          : Colors.white.withAlpha((0.2 * 255).toInt()),
+                              ? Colors.black.withAlpha((0.2 * 255).toInt())
+                              : Colors.white.withAlpha((0.2 * 255).toInt()),
                     ),
                   ),
                 ),
@@ -221,10 +229,11 @@ class HistoryScreenState extends State<HistoryScreen> {
           builder: (context, constraints) {
             return Text(
               "Histórico de Medidas",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.black,
+              style: GoogleFonts.acme(
+                color:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Colors.white
+                        : Colors.black,
                 fontSize: constraints.maxWidth > 260 ? 24 : 20,
               ),
             );
@@ -241,67 +250,75 @@ class HistoryScreenState extends State<HistoryScreen> {
           ),
         ],
       ),
-      body: measurements.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppStyles.infoIcon(context),
-                  const SizedBox(height: AppStyles.spacingNormal),
-                  Text(
-                    "Nenhuma medida salva :(",
-                    style: AppStyles.fadedText(context),
-                  ),
-                ],
+      body:
+          measurements.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppStyles.infoIcon(context),
+                    const SizedBox(height: AppStyles.spacingNormal),
+                    Text(
+                      "Nenhuma medida salva :(",
+                      style: AppStyles.fadedText(context),
+                    ),
+                  ],
+                ),
+              )
+              : ListView.separated(
+                padding: AppStyles.paddingSmall,
+                itemCount: measurements.length,
+                separatorBuilder:
+                    (context, index) =>
+                        const SizedBox(height: AppStyles.spacingNormal),
+                itemBuilder: (context, index) {
+                  final m = measurements[index];
+                  return AppStyles.materialCard(
+                    context: context,
+                    child: ListTile(
+                      leading: AppStyles.avatar(
+                        context: context,
+                        child: AppStyles.straightenIcon(context),
+                      ),
+                      title: GestureDetector(
+                        onLongPress: () {
+                          Clipboard.setData(
+                            ClipboardData(text: m.totalDistance),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Distância copiada!",
+                                style: GoogleFonts.acme(),
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          m.totalDistance,
+                          style: AppStyles.listTileTitle(context),
+                        ),
+                      ),
+                      subtitle: Text(
+                        DateFormat('dd/MM/yyyy HH:mm').format(m.timestamp),
+                        style: AppStyles.listTileSubtitle(context),
+                      ),
+                      trailing: Tooltip(
+                        message: 'Excluir a Medida',
+                        child: IconButton(
+                          icon: AppStyles.deleteIcon,
+                          onPressed: () => _deleteMeasurement(index),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? AppColors.bambooBase
+                                  : AppColors.oregonBase,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            )
-          : ListView.separated(
-              padding: AppStyles.paddingSmall,
-              itemCount: measurements.length,
-              separatorBuilder: (context, index) =>
-                  const SizedBox(height: AppStyles.spacingNormal),
-              itemBuilder: (context, index) {
-                final m = measurements[index];
-                return AppStyles.materialCard(
-                  context: context,
-                  child: ListTile(
-                    leading: AppStyles.avatar(
-                      context: context,
-                      child: AppStyles.straightenIcon(context),
-                    ),
-                    title: GestureDetector(
-                      onLongPress: () {
-                        Clipboard.setData(ClipboardData(text: m.totalDistance));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text("Distância copiada!"),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        m.totalDistance,
-                        style: AppStyles.listTileTitle(context),
-                      ),
-                    ),
-                    subtitle: Text(
-                      DateFormat('dd/MM/yyyy HH:mm').format(m.timestamp),
-                      style: AppStyles.listTileSubtitle(context),
-                    ),
-                    trailing: Tooltip(
-                      message: 'Excluir a Medida',
-                      child: IconButton(
-                        icon: AppStyles.deleteIcon,
-                        onPressed: () => _deleteMeasurement(index),
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? AppColors.bambooBase
-                            : AppColors.oregonBase,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
     );
   }
 }
