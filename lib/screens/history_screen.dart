@@ -17,6 +17,7 @@ class HistoryScreen extends StatefulWidget {
 
 class HistoryScreenState extends State<HistoryScreen> {
   late List<Measurement> measurements = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -25,9 +26,11 @@ class HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _loadMeasurements() async {
+    setState(() => _isLoading = true);
     final result = await MeasurementFirebaseService.getAll();
     setState(() {
       measurements = result;
+      _isLoading = false;
     });
   }
 
@@ -104,7 +107,6 @@ class HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(
         leading: Builder(
           builder: (context) {
-            final screenWidth = MediaQuery.of(context).size.width;
             return IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
@@ -141,8 +143,11 @@ class HistoryScreenState extends State<HistoryScreen> {
           ),
         ],
       ),
+
       body:
-          measurements.isEmpty
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : measurements.isEmpty
               ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
