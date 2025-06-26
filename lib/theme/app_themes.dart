@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_styles.dart';
 
@@ -42,12 +43,12 @@ final ThemeData appThemeLight = ThemeData(
   ),
   iconTheme: const IconThemeData(color: Colors.white, size: 24),
   textTheme: TextTheme(
-    titleLarge: TextStyle(
+    titleLarge: GoogleFonts.acme(
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: AppColors.oregonBase,
     ),
-    bodyLarge: TextStyle(
+    bodyLarge: GoogleFonts.acme(
       fontSize: 16,
       color: AppColors.oregonBase.withAlpha((0.8 * 255).toInt()),
     ),
@@ -55,7 +56,7 @@ final ThemeData appThemeLight = ThemeData(
   snackBarTheme: SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
     backgroundColor: AppColors.oregonBase,
-    contentTextStyle: const TextStyle(
+    contentTextStyle: GoogleFonts.acme(
       color: Colors.white,
       fontWeight: FontWeight.bold,
     ),
@@ -128,12 +129,12 @@ final ThemeData appDarkTheme = ThemeData(
   ),
   iconTheme: const IconThemeData(color: Colors.black, size: 24),
   textTheme: TextTheme(
-    titleLarge: TextStyle(
+    titleLarge: GoogleFonts.acme(
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: AppColors.bambooBase,
     ),
-    bodyLarge: TextStyle(
+    bodyLarge: GoogleFonts.acme(
       fontSize: 16,
       color: AppColors.bambooBase.withAlpha((0.8 * 255).toInt()),
     ),
@@ -141,7 +142,7 @@ final ThemeData appDarkTheme = ThemeData(
   snackBarTheme: SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
     backgroundColor: AppColors.bambooBase,
-    contentTextStyle: const TextStyle(
+    contentTextStyle: GoogleFonts.acme(
       color: Colors.black,
       fontWeight: FontWeight.bold,
     ),
