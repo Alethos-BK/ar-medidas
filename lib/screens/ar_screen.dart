@@ -458,6 +458,7 @@ class _ArScreenState extends State<ArScreen> {
               "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
         });
       }
+
       lastPosition = position;
     }
   }
