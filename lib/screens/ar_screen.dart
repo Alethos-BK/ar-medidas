@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:ar_medidas/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -288,14 +289,14 @@ class _ArScreenState extends State<ArScreen> {
     );
   }
 
-  void _saveMeasurement() {
+  void _saveMeasurement() async {
     final measurement = Measurement(
       timestamp: DateTime.now(),
       totalDistance: _formatDistance(totalDistance.toDouble(), selectedUnit),
       unit: selectedUnit,
     );
 
-    MeasurementRepository().addMeasurement(measurement);
+    await MeasurementFirebaseService.addMeasurement(measurement);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

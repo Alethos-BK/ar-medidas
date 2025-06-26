@@ -1,3 +1,4 @@
+import 'package:ar_medidas/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,195 +16,85 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class HistoryScreenState extends State<HistoryScreen> {
-  late List<Measurement> measurements;
+  late List<Measurement> measurements = [];
 
   @override
   void initState() {
     super.initState();
-    measurements = MeasurementRepository().getAllMeasurements();
+    _loadMeasurements();
   }
 
-  void _deleteMeasurement(int index) {
-    final Measurement measurementToDelete = measurements[index];
+  Future<void> _loadMeasurements() async {
+    final result = await MeasurementFirebaseService.getAll();
+    setState(() {
+      measurements = result;
+    });
+  }
 
-    showDialog(
+  void _deleteMeasurement(int index) async {
+    final measurementToDelete = measurements[index];
+
+    final confirm = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          elevation: 4,
-          shadowColor:
-              Theme.of(context).brightness == Brightness.light
-                  ? Colors.black.withAlpha((0.2 * 255).toInt())
-                  : Colors.white.withAlpha((0.2 * 255).toInt()),
-          insetPadding: EdgeInsets.all(17),
-          title: Row(
-            children: [
-              AppStyles.warningIcon(context),
-              SizedBox(width: AppStyles.spacingNormal),
-              Text(
-                "Excluir a Medida?",
-                style: AppStyles.containerText(context),
+      builder:
+          (context) => AlertDialog(
+            title: Text("Excluir Medida?"),
+            content: Text("Essa ação não poderá ser desfeita!"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text("Excluir"),
               ),
             ],
           ),
-          content: Text(
-            "Essa ação não poderá ser desfeita!",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Tooltip(
-                  message: 'Cancelar a Exclusão',
-                  child: TextButton.icon(
-                    icon: AppStyles.cancelIcon,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    label: Text("Cancelar", style: GoogleFonts.acme()),
-                    style: TextButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? AppColors.cornBase
-                              : AppColors.cornShades[7],
-                      shadowColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Colors.black.withAlpha((0.2 * 255).toInt())
-                              : Colors.white.withAlpha((0.2 * 255).toInt()),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppStyles.spacingNormal),
-                Tooltip(
-                  message: 'Excluir Medida do Histórico',
-                  child: TextButton.icon(
-                    icon: AppStyles.deleteIcon,
-                    onPressed: () {
-                      setState(() {
-                        measurements.removeAt(index);
-                      });
-                      MeasurementRepository().deleteMeasurement(
-                        measurementToDelete,
-                      );
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Medida excluída com sucesso!",
-                            style: GoogleFonts.acme(),
-                          ),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    label: Text("Excluir", style: GoogleFonts.acme()),
-                    style: TextButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? AppColors.bambooBase
-                              : AppColors.oregonBase,
-                      shadowColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Colors.black.withAlpha((0.2 * 255).toInt())
-                              : Colors.white.withAlpha((0.2 * 255).toInt()),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
     );
+
+    if (confirm == true) {
+      await MeasurementFirebaseService.removeMeasurement(measurementToDelete);
+      setState(() {
+        measurements.removeAt(index);
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Medida excluída com sucesso!")));
+    }
   }
 
-  void _clearAllMeasurements() {
-    showDialog(
+  void _clearAllMeasurements() async {
+    final confirm = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          insetPadding: EdgeInsets.all(17),
-          title: Row(
-            children: [
-              AppStyles.warningIcon(context),
-              SizedBox(width: AppStyles.spacingNormal),
-              Text(
-                "Limpar Histórico?",
-                style: Theme.of(context).textTheme.titleLarge,
+      builder:
+          (context) => AlertDialog(
+            title: Text("Limpar Histórico?"),
+            content: Text("Essa ação não poderá ser desfeita!"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text("Limpar"),
               ),
             ],
           ),
-          content: Text(
-            "Isso apagará todo o histórico!\nEssa ação não poderá ser desfeita!",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Tooltip(
-                  message: 'Cancelar a Limpeza',
-                  child: TextButton.icon(
-                    icon: AppStyles.cancelIcon,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    label: Text("Cancelar", style: GoogleFonts.acme()),
-                    style: TextButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? AppColors.cornBase
-                              : AppColors.cornShades[7],
-                      shadowColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Colors.black.withAlpha((0.2 * 255).toInt())
-                              : Colors.white.withAlpha((0.2 * 255).toInt()),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppStyles.spacingNormal),
-                Tooltip(
-                  message: 'Limpar Todo o Histórico',
-                  child: TextButton.icon(
-                    icon: AppStyles.deleteForeverIcon,
-                    onPressed: () {
-                      setState(() {
-                        MeasurementRepository().clearAllMeasurements();
-                        measurements.clear();
-                      });
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Histórico limpo com sucesso!",
-                            style: GoogleFonts.acme(),
-                          ),
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                    },
-                    label: Text("Limpar", style: GoogleFonts.acme()),
-                    style: TextButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? AppColors.bambooBase
-                              : AppColors.oregonBase,
-                      shadowColor:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Colors.black.withAlpha((0.2 * 255).toInt())
-                              : Colors.white.withAlpha((0.2 * 255).toInt()),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
     );
+
+    if (confirm == true) {
+      await MeasurementFirebaseService.clearAllMeasurements();
+      setState(() {
+        measurements.clear();
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Histórico limpo com sucesso!")));
+    }
   }
 
   @override
