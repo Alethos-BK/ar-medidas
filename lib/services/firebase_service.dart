@@ -15,8 +15,9 @@ class MeasurementFirebaseService {
   }
 
   static Future<List<Measurement>> getAll() async {
-    final snapshot =
-        await _collection.orderBy('timestamp', descending: true).get();
+    final snapshot = await _collection
+        .orderBy('timestamp', descending: true)
+        .get();
 
     return snapshot.docs.map((doc) {
       final data = doc.data();
@@ -29,14 +30,10 @@ class MeasurementFirebaseService {
   }
 
   static Future<void> removeMeasurement(Measurement measurement) async {
-    final snapshot =
-        await _collection
-            .where(
-              'timestamp',
-              isEqualTo: measurement.timestamp.toIso8601String(),
-            )
-            .limit(1)
-            .get();
+    final snapshot = await _collection
+        .where('timestamp', isEqualTo: measurement.timestamp.toIso8601String())
+        .limit(1)
+        .get();
 
     if (snapshot.docs.isNotEmpty) {
       await snapshot.docs.first.reference.delete();
