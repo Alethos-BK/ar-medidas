@@ -1,3 +1,4 @@
+import 'package:ar_medidas/screens/about_sreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/ar_screen.dart';
@@ -98,6 +99,29 @@ class HomeScreen extends StatelessWidget {
                   },
                   icon: Icon(Icons.history_rounded, size: 30),
                   label: Text("Acessar Histórico", style: GoogleFonts.acme()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                            ? AppColors.bambooBase
+                            : AppColors.oregonBase,
+                    textStyle: AppStyles.buttonText,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppStyles.spacingMedium),
+              Tooltip(
+                message: 'Ver informações sobre o app',
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AboutScreen(),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.info_outline_rounded, size: 30),
+                  label: Text("Sobre o App", style: GoogleFonts.acme()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         Theme.of(context).brightness == Brightness.light

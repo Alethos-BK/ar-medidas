@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_styles.dart';
 
 final ThemeData appThemeLight = ThemeData(
+  fontFamily: 'GoogleAcme',
   brightness: Brightness.light,
   primaryColor: AppColors.robinEggBase,
   scaffoldBackgroundColor: AppColors.caperShades[0],
