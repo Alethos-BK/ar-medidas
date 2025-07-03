@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_styles.dart';
 
 final ThemeData appThemeLight = ThemeData(
+  fontFamily: 'GoogleAcme',
   brightness: Brightness.light,
   primaryColor: AppColors.robinEggBase,
   scaffoldBackgroundColor: AppColors.caperShades[0],
@@ -43,12 +43,17 @@ final ThemeData appThemeLight = ThemeData(
   ),
   iconTheme: const IconThemeData(color: Colors.white, size: 24),
   textTheme: TextTheme(
-    titleLarge: GoogleFonts.acme(
+    titleLarge: const TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: AppColors.oregonBase,
     ),
-    bodyLarge: GoogleFonts.acme(
+    titleMedium: const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: AppColors.oregonBase,
+    ),
+    bodyLarge: TextStyle(
       fontSize: 16,
       color: AppColors.oregonBase.withAlpha((0.8 * 255).toInt()),
     ),
@@ -56,7 +61,8 @@ final ThemeData appThemeLight = ThemeData(
   snackBarTheme: SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
     backgroundColor: AppColors.oregonBase,
-    contentTextStyle: GoogleFonts.acme(
+    contentTextStyle: const TextStyle(
+      fontFamily: 'GoogleAcme',
       color: Colors.white,
       fontWeight: FontWeight.bold,
     ),
@@ -87,9 +93,16 @@ final ThemeData appThemeLight = ThemeData(
     elevation: 4,
     shadowColor: Colors.black.withAlpha((0.2 * 255).toInt()),
   ),
+  progressIndicatorTheme: ProgressIndicatorThemeData(
+    color: AppColors.robinEggBase,
+    circularTrackColor: AppColors.caperShades[4].withAlpha((0.3 * 255).toInt()),
+    linearTrackColor: AppColors.caperShades[4].withAlpha((0.3 * 255).toInt()),
+    linearMinHeight: 6.0,
+  ),
 );
 
 final ThemeData appDarkTheme = ThemeData(
+  fontFamily: 'GoogleAcme',
   brightness: Brightness.dark,
   primaryColor: AppColors.robinEggShades[8],
   scaffoldBackgroundColor: AppColors.caperShades[9],
@@ -129,12 +142,17 @@ final ThemeData appDarkTheme = ThemeData(
   ),
   iconTheme: const IconThemeData(color: Colors.black, size: 24),
   textTheme: TextTheme(
-    titleLarge: GoogleFonts.acme(
+    titleLarge: const TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: AppColors.bambooBase,
     ),
-    bodyLarge: GoogleFonts.acme(
+    titleMedium: const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: AppColors.bambooBase,
+    ),
+    bodyLarge: TextStyle(
       fontSize: 16,
       color: AppColors.bambooBase.withAlpha((0.8 * 255).toInt()),
     ),
@@ -142,7 +160,8 @@ final ThemeData appDarkTheme = ThemeData(
   snackBarTheme: SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
     backgroundColor: AppColors.bambooBase,
-    contentTextStyle: GoogleFonts.acme(
+    contentTextStyle: const TextStyle(
+      fontFamily: 'GoogleAcme',
       color: Colors.black,
       fontWeight: FontWeight.bold,
     ),
@@ -172,5 +191,11 @@ final ThemeData appDarkTheme = ThemeData(
     margin: EdgeInsets.zero,
     elevation: 4,
     shadowColor: Colors.white.withAlpha((0.2 * 255).toInt()),
+  ),
+  progressIndicatorTheme: ProgressIndicatorThemeData(
+    color: AppColors.robinEggShades[8],
+    circularTrackColor: AppColors.caperShades[7].withAlpha((0.3 * 255).toInt()),
+    linearTrackColor: AppColors.caperShades[7].withAlpha((0.3 * 255).toInt()),
+    linearMinHeight: 6.0,
   ),
 );

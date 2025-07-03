@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
 import 'package:screenshot/screenshot.dart';
 import 'package:gal/gal.dart';
@@ -18,8 +17,8 @@ import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
 import 'package:ar_flutter_plugin_2/models/ar_node.dart';
 import '../models/measurement_segment.dart';
 import '../models/measurement.dart';
-import '../repositories/measurement_repository.dart';
 import '../screens/history_screen.dart';
+import '../services/firebase_service.dart';
 import '../theme/app_styles.dart';
 
 class ArScreen extends StatefulWidget {
@@ -58,11 +57,10 @@ class _ArScreenState extends State<ArScreen> {
         centerTitle: true,
         title: Text(
           'AR Medidas',
-          style: GoogleFonts.acme(
-            color:
-                Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
           ),
         ),
         leading: IconButton(
@@ -74,7 +72,7 @@ class _ArScreenState extends State<ArScreen> {
           IconButton(
             icon: AppStyles.historyIcon,
             iconSize: 38,
-            tooltip: 'Acessar Histórico de Medições',
+            tooltip: 'Acessar o Histórico de Medições',
             onPressed: () {
               Navigator.push(
                 context,
@@ -100,7 +98,7 @@ class _ArScreenState extends State<ArScreen> {
                   width: 206.5,
                   child: ElevatedButton(
                     onPressed: onRemoveEverything,
-                    child: Text("Remover Tudo", style: GoogleFonts.acme()),
+                    child: Text("Remover Tudo", style: AppStyles.buttonText),
                   ),
                 ),
               ),
@@ -115,7 +113,7 @@ class _ArScreenState extends State<ArScreen> {
                   width: 206.5,
                   child: ElevatedButton(
                     onPressed: _saveMeasurement,
-                    child: Text("Salvar Medição", style: GoogleFonts.acme()),
+                    child: Text("Salvar Medição", style: AppStyles.buttonText),
                   ),
                 ),
               ),
@@ -261,10 +259,7 @@ class _ArScreenState extends State<ArScreen> {
                       Clipboard.setData(ClipboardData(text: "$lastDistance"));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            "Distância copiada!",
-                            style: GoogleFonts.acme(),
-                          ),
+                          content: Text("Distância copiada!"),
                           duration: Duration(seconds: 2),
                         ),
                       );
@@ -288,18 +283,18 @@ class _ArScreenState extends State<ArScreen> {
     );
   }
 
-  void _saveMeasurement() {
+  void _saveMeasurement() async {
     final measurement = Measurement(
       timestamp: DateTime.now(),
       totalDistance: _formatDistance(totalDistance.toDouble(), selectedUnit),
       unit: selectedUnit,
     );
 
-    MeasurementRepository().addMeasurement(measurement);
+    await MeasurementFirebaseService.addMeasurement(measurement);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Medição salva com sucesso!', style: GoogleFonts.acme()),
+        content: Text('Medição salva com sucesso!'),
         duration: Duration(seconds: 2),
       ),
     );
@@ -366,10 +361,9 @@ class _ArScreenState extends State<ArScreen> {
 
       var newNode = ARNode(
         type: NodeType.localGLTF2,
-        uri:
-            Theme.of(context).brightness == Brightness.light
-                ? "assets/turquoise_sphere.glb"
-                : "assets/dark_turquoise_sphere.glb",
+        uri: Theme.of(context).brightness == Brightness.light
+            ? "assets/turquoise_sphere.glb"
+            : "assets/dark_turquoise_sphere.glb",
         scale: vector_math.Vector3.all(0.03),
         position: vector_math.Vector3.zero(),
       );
@@ -402,9 +396,8 @@ class _ArScreenState extends State<ArScreen> {
               lastPosition! +
               (position - lastPosition!) * (i / (numberOfNodes + 1));
 
-          var transform =
-              vector_math.Matrix4.identity()
-                ..setTranslation(interpolatedPosition);
+          var transform = vector_math.Matrix4.identity()
+            ..setTranslation(interpolatedPosition);
 
           var lineAnchor = ARPlaneAnchor(transformation: transform);
           bool? anchorAdded = await arAnchorManager!.addAnchor(lineAnchor);
@@ -417,10 +410,9 @@ class _ArScreenState extends State<ArScreen> {
 
             var lineNode = ARNode(
               type: NodeType.localGLTF2,
-              uri:
-                  Theme.of(context).brightness == Brightness.light
-                      ? "assets/yellow_sphere.glb"
-                      : "assets/dark_yellow_sphere.glb",
+              uri: Theme.of(context).brightness == Brightness.light
+                  ? "assets/yellow_sphere.glb"
+                  : "assets/dark_yellow_sphere.glb",
               scale: vector_math.Vector3.all(0.015),
               position: vector_math.Vector3.zero(),
             );
@@ -457,6 +449,7 @@ class _ArScreenState extends State<ArScreen> {
               "Distância Atual: ${_formatDistance(currentDistance, selectedUnit)}\nDistância Total: ${_formatDistance(totalDistance, selectedUnit)}";
         });
       }
+
       lastPosition = position;
     }
   }
@@ -490,10 +483,7 @@ class _ArScreenState extends State<ArScreen> {
     if (measurementSegments.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Nenhuma medição para ser desfeita!',
-            style: GoogleFonts.acme(),
-          ),
+          content: Text('Nenhuma medição para ser desfeita!'),
           duration: Duration(seconds: 1),
         ),
       );
@@ -562,10 +552,7 @@ class _ArScreenState extends State<ArScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Captura de tela salva com sucesso!',
-              style: GoogleFonts.acme(),
-            ),
+            content: Text('Captura de tela salva com sucesso!'),
             duration: Duration(seconds: 2),
           ),
         );
@@ -575,7 +562,7 @@ class _ArScreenState extends State<ArScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(getErrorMessage(e.type), style: GoogleFonts.acme()),
+            content: Text(getErrorMessage(e.type)),
             duration: Duration(seconds: 2),
           ),
         );

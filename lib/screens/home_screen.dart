@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import '../screens/about_screen.dart';
 import '../screens/ar_screen.dart';
 import '../screens/history_screen.dart';
 import '../theme/app_colors.dart';
@@ -17,11 +18,10 @@ class HomeScreen extends StatelessWidget {
         centerTitle: true,
         title: Text(
           'AR Medidas',
-          style: GoogleFonts.acme(
-            color:
-                Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
           ),
         ),
         actions: [
@@ -48,10 +48,9 @@ class HomeScreen extends StatelessWidget {
               Material(
                 elevation: 4,
                 shape: CircleBorder(),
-                shadowColor:
-                    Theme.of(context).brightness == Brightness.light
-                        ? Colors.black.withAlpha((0.2 * 255).toInt())
-                        : Colors.white.withAlpha((0.2 * 255).toInt()),
+                shadowColor: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black.withAlpha((0.2 * 255).toInt())
+                    : Colors.white.withAlpha((0.2 * 255).toInt()),
                 child: ClipOval(
                   child: Image.asset(
                     'assets/Image.png',
@@ -64,12 +63,12 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: AppStyles.spacingMedium),
               Text(
                 "Bem-vindo ao nosso App de Medidas",
-                style: AppStyles.containerText(context),
+                style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppStyles.spacingLarge),
               Tooltip(
-                message: 'Iniciar a Mediçãoo',
+                message: 'Iniciar a Medição',
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -78,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                     );
                   },
                   icon: AppStyles.cameraIcon,
-                  label: Text("Iniciar Medição", style: GoogleFonts.acme()),
+                  label: const Text("Iniciar Medição"),
                   style: ElevatedButton.styleFrom(
                     textStyle: AppStyles.buttonText,
                   ),
@@ -86,7 +85,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppStyles.spacingMedium),
               Tooltip(
-                message: 'Acessar Histórico de Medições',
+                message: 'Acessar o Histórico de Medições',
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -96,13 +95,36 @@ class HomeScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: Icon(Icons.history_rounded, size: 30),
-                  label: Text("Acessar Histórico", style: GoogleFonts.acme()),
+                  icon: Icon(FeatherIcons.clock, size: 30),
+                  label: const Text("Acessar Histórico"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         Theme.of(context).brightness == Brightness.light
-                            ? AppColors.bambooBase
-                            : AppColors.oregonBase,
+                        ? AppColors.bambooBase
+                        : AppColors.oregonBase,
+                    textStyle: AppStyles.buttonText,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppStyles.spacingMedium),
+              Tooltip(
+                message: 'Ver informações sobre o app',
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AboutScreen(),
+                      ),
+                    );
+                  },
+                  icon: Icon(FeatherIcons.info, size: 30),
+                  label: const Text("Sobre o App"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                        ? AppColors.bambooBase
+                        : AppColors.oregonBase,
                     textStyle: AppStyles.buttonText,
                   ),
                 ),
